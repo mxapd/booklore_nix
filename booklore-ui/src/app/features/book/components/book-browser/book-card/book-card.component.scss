@@ -1,0 +1,236 @@
+.book-card {
+  background-color: var(--card-background);
+  border-radius: 8px 8px 8px 8px;
+  position: relative;
+  overflow: hidden;
+  transition: border 0.2s;
+
+  &.selected {
+    border: 2px solid var(--primary-color);
+  }
+}
+
+.cover-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5/7;
+  background-color: var(--card-background);
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.cover-container.loaded {
+  background-color: transparent;
+}
+
+.book-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+  transition: opacity 0.3s ease-in;
+  opacity: 0;
+}
+
+.cover-container img.loaded {
+  opacity: 1;
+}
+
+.cover-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.6) 100%);
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+.cover-container:hover::after {
+  opacity: 1;
+}
+
+.book-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.book-title {
+  flex-grow: 1;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.info-btn,
+.read-btn {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 2;
+}
+
+.info-btn {
+  top: 21%;
+}
+
+.read-btn {
+  bottom: 21%;
+}
+
+.cover-container:hover .info-btn,
+.cover-container:hover .read-btn {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cover-container.center-info-btn .info-btn {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.select-checkbox {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 2;
+}
+
+.select-checkbox .p-checkbox {
+  vertical-align: top;
+}
+
+.cover-container:hover .select-checkbox,
+.book-card.selected .select-checkbox {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cover-progress-bar,
+.cover-progress-bar-ko-both,
+.cover-progress-bar-ko-only {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+.cover-progress-bar {
+  bottom: 2.5px;
+}
+
+.cover-progress-bar-ko-both {
+  bottom: 0;
+}
+
+.cover-progress-bar-ko-only {
+  bottom: 2.5px;
+}
+
+.series-number-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 0.75rem;
+  padding: 1px 3px;
+  border-radius: 3px;
+  z-index: 3;
+}
+
+.series-items-count-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: var(--primary-color);
+  color: var(--primary-text-color-dark);
+  font-size: 0.75rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  z-index: 3;
+  white-space: nowrap;
+  user-select: none;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+}
+
+.read-status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.status-read {
+  color: #22c55e;
+}
+
+.status-reading {
+  color: #3b82f6;
+}
+
+.status-re-reading {
+  color: #06b6d4;
+}
+
+.status-partially-read {
+  color: #f59e0b;
+}
+
+.status-paused {
+  color: #eab308;
+}
+
+.status-abandoned {
+  color: #ef4444;
+}
+
+.status-wont-read {
+  color: #ec4899;
+}
+
+::ng-deep .progress-incomplete .p-progressbar-value {
+  background-color: #3b82f6;
+}
+
+::ng-deep .progress-complete .p-progressbar-value {
+  background-color: #22c55e;
+}
+
+::ng-deep .progress-incomplete-ko .p-progressbar-value {
+  background-color: #fbbf24;
+}
+
+::ng-deep .progress-complete-ko .p-progressbar-value {
+  background-color: #8b5cf6;
+}
+
+::ng-deep p-progressbar {
+  --p-progressbar-border-radius: 0 !important;
+}
+
+::ng-deep .custom-button-padding .p-button {
+  padding-block: 0.25rem !important;
+}

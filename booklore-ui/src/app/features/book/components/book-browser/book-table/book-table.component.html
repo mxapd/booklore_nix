@@ -1,0 +1,118 @@
+<p-table
+  [value]="books"
+  [columns]="visibleColumns"
+  [dataKey]="'id'"
+  [resizableColumns]="true"
+  [reorderableColumns]="true"
+  columnResizeMode="expand"
+  [rowTrackBy]="trackByBookId"
+  [metaKeySelection]="true"
+  showGridlines
+  stripedRows
+  [scrollable]="true"
+  [scrollHeight]="scrollHeight"
+  [virtualScroll]="true"
+  [virtualScrollItemSize]="46"
+  [(selection)]="selectedBooks"
+  (onHeaderCheckboxToggle)="onHeaderCheckboxToggle($event)"
+  (onRowSelect)="onRowSelect($event)"
+  (onRowUnselect)="onRowUnselect($event)"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>
+        <p-tableHeaderCheckbox/>
+      </th>
+      <th></th>
+      <th class="max-w-14 min-w-14"></th>
+      @for (col of visibleColumns; track col.field) {
+        <th pResizableColumn>{{ col.header }}</th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-book>
+    @if (book.metadata; as metadata) {
+      <tr style="height:46px">
+        <td>
+          <p-tableCheckbox [value]="book"/>
+        </td>
+        <td class="text-center">
+          <p-button
+            [icon]="isMetadataFullyLocked(metadata) ? 'pi pi-lock' : 'pi pi-lock-open'"
+            [severity]="isMetadataFullyLocked(metadata) ? 'danger' : 'success'"
+            [text]="true"
+            [title]="isMetadataFullyLocked(metadata) ? 'Locked' : 'Unlocked'"
+            size="small"
+            [style]="{ width: '1.5rem', height: '1.5rem', padding: '0', fontSize: '0.75rem' }"
+            (click)="toggleMetadataLock(metadata)">
+          </p-button>
+        </td>
+        <td>
+          <a [routerLink]="urlHelper.getBookUrl(book)">
+            <img
+              [attr.src]="urlHelper.getThumbnailUrl(metadata.bookId, metadata.coverUpdatedOn)"
+              alt="Book Cover"
+              class="size-7"
+              tooltipPosition="left"
+              [pTooltip]="tooltipContent"
+              tooltipStyleClass="[&>.p-tooltip-text]:p-1"
+            />
+          </a>
+          <ng-template #tooltipContent>
+            <div class="flex flex-col items-center gap-2">
+              <img
+                [attr.src]="urlHelper.getThumbnailUrl(metadata.bookId, metadata.coverUpdatedOn)"
+                alt="Book Cover"
+                class="w-[40rem] h-auto"
+              />
+              <em class="text-sm text-balance text-center">{{ metadata.title }}</em>
+            </div>
+          </ng-template>
+        </td>
+
+        @for (col of visibleColumns; track col.field) {
+          @if (col.field === 'readStatus') {
+            <td class="text-center min-w-[4rem] max-w-[4rem]">
+              @if (shouldShowStatusIcon(book.readStatus)) {
+                <div class="read-status-indicator"
+                     [ngClass]="getReadStatusClass(book.readStatus)"
+                     [pTooltip]="'Status: ' + getReadStatusTooltip(book.readStatus)"
+                     tooltipPosition="top">
+                  <i [class]="getReadStatusIcon(book.readStatus)"></i>
+                </div>
+              }
+            </td>
+          } @else if (col.field === 'amazonRating' || col.field === 'goodreadsRating' || col.field === 'hardcoverRating') {
+            <td class="min-w-[10rem] max-w-[10rem] overflow-hidden truncate">
+              <span class="flex items-center gap-1">
+                <p-rating
+                  [(ngModel)]="metadata[col.field]"
+                  readonly
+                  stars="5"
+                  [style.--p-rating-icon-active-color]="getStarColor(metadata[col.field])"
+                ></p-rating>
+                @if (metadata[col.field] != null) {
+                  <span>({{ metadata[col.field]?.toFixed(1) }})</span>
+                }
+              </span>
+            </td>
+          } @else {
+            <td
+              [title]="getCellValue(metadata, book, col.field)"
+              class="overflow-hidden truncate text-right min-w-[6rem] max-w-[12rem]">
+              @if(['title', 'authors', 'publisher', 'seriesName', 'categories', 'language'].includes(col.field)) {
+                @for (item of getCellClickableValue(metadata, book, col.field); track $index; let isLast = $last) {
+                  <a [routerLink]="item.url" class="hover:underline hover:text-blue-400">
+                    {{ item.anchor }}</a>@if (!isLast) {<span>, </span>}
+                }
+              } @else {
+                {{ getCellValue(metadata, book, col.field) }}
+              }
+            </td>
+          }
+        }
+      </tr>
+    }
+  </ng-template>
+</p-table>

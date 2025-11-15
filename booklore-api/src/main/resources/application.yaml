@@ -1,0 +1,72 @@
+app:
+  path-config: '/app/data'
+  bookdrop-folder: '/bookdrop'
+  version: 'v0.0.40'
+  swagger:
+    enabled: ${SWAGGER_ENABLED:false}
+  remote-auth:
+    enabled: ${REMOTE_AUTH_ENABLED:false}
+    create-new-users: ${REMOTE_AUTH_CREATE_NEW_USERS:true}
+    header-name: ${REMOTE_AUTH_HEADER_NAME:Remote-Name}
+    header-user: ${REMOTE_AUTH_HEADER_USER:Remote-User}
+    header-email: ${REMOTE_AUTH_HEADER_EMAIL:Remote-Email}
+    header-groups: ${REMOTE_AUTH_HEADER_GROUPS:Remote-Groups}
+    admin-group: ${REMOTE_AUTH_ADMIN_GROUP}
+  force-disable-oidc: ${FORCE_DISABLE_OIDC:false}
+
+server:
+  forward-headers-strategy: native
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      enabled: false
+  mvc:
+    async:
+      request-timeout: 600000
+  application:
+    name: booklore-api
+  datasource:
+    url: ${DATABASE_URL:jdbc:mariadb://${DATABASE_HOST:${DB_HOST:mariadb}}:${DATABASE_PORT:3306}/${DATABASE_NAME:booklore}?createDatabaseIfNotExist=true}
+    username: ${DATABASE_USERNAME:${DATABASE_USER}}
+    password: ${DATABASE_PASSWORD:booklore}
+    hikari:
+      max-lifetime: 580000         # 9.6 minutes (avoid DB-side connection cuts)
+      connection-test-query: SELECT 1
+      maximum-pool-size: 10        # Allows bursts
+      minimum-idle: 1              # Shrinks when idle
+      idle-timeout: 300000         # 5 minutes before idle connections are closed
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 500
+          order_inserts: true
+          order_updates: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+springdoc:
+  swagger-ui:
+    path: /api/v1/swagger-ui.html
+    persist-authorization: true
+  api-docs:
+    path: /api/v1/api-docs
+
+logging:
+  level:
+    root: ${ROOT_LOG_LEVEL:INFO}
+    com.adityachandel.booklore: ${LOG_LEVEL:INFO}
+    org.apache.fontbox: ERROR
+    org.apache.pdfbox: ERROR
+    org.quartz.core.QuartzScheduler: WARN
+    org.quartz.simpl.SimpleThreadPool: WARN
+    org.quartz.simpl.RAMJobStore: WARN
+    org.hibernate.orm.connections.pooling: WARN
+    org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR
